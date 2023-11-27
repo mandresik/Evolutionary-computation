@@ -1,11 +1,15 @@
 import math as M
 
+fact_2 = 2
+fact_10 = 3628800
+fact_30 = 265252859812191058636308480000000
 
 def norm(x):
     return M.sqrt(sum(xi**2 for xi in x))
 
+
 ###############################################################################
-#                          25 BENCHMARK FUNCTIONS        
+#                            BENCHMARK FUNCTIONS        
 ###############################################################################
 
 def Ackley(x):
@@ -50,7 +54,11 @@ def Michalewicz_m10(x):
     return Michalewicz(x, 10)
 
 # f is precalculated value of factorial, f = (len(x))!
-def Mishra07(x, f): 
+# Mishra07 is created only for dimensions 2, 10, 30
+def Mishra07(x): 
+    if(len(x) == 10): f = fact_10
+    elif(len(x) == 30): f = fact_30
+    else: f = fact_2
     return (M.prod(xi for xi in x) - f)**2
 
 def Mishra11(x):
