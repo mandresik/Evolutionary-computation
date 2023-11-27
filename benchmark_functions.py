@@ -4,6 +4,9 @@ import math as M
 def norm(x):
     return M.sqrt(sum(xi**2 for xi in x))
 
+###############################################################################
+#                          25 BENCHMARK FUNCTIONS        
+###############################################################################
 
 def Ackley(x):
     return -20 * M.exp(-0.2 * M.sqrt(sum(xi**2 for xi in x) / len(x))) - M.exp(sum(M.cos(2 * M.pi * xi) for xi in x) / len(x)) + 20 + M.exp(1)
