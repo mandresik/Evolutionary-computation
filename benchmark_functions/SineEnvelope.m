@@ -13,9 +13,9 @@ us = -border_s : step_s : border_s;
 % f1(us)
  % not defined
 % F2(x,y)
-F2 = -(.5 + ((sin(x.^2 + y.^2 - .5).^2) ./ (1+0.001*(x.^2 + y.^2).^2)));
+F2 = -(.5 + ((sin(x.^2 + y.^2 - .5).^2) ./ (1+0.001*(x.^2 + y.^2)).^2));
 % f2(xs,ys)
-f2 = -(.5 + ((sin(xs.^2 + ys.^2 - .5).^2) ./ (1+0.001*(xs.^2 + ys.^2).^2)));
+f2 = -(.5 + ((sin(xs.^2 + ys.^2 - .5).^2) ./ (1+0.001*(xs.^2 + ys.^2)).^2));
 %% figure with 1 variable
 % figure(1); 
 % sgtitle("TITLE")

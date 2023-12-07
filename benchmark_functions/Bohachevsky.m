@@ -13,9 +13,9 @@ us = -border_s : step_s : border_s;
 % f1(us)
  % not defined
 % F2(x,y)
-F2 = x.^2 + 2*y.^2 - .3*cos(3*pi*x) - .4*(4*pi*y) + .7;
+F2 = x.^2 + 2*y.^2 - .3*cos(3*pi*x) - .4*cos(4*pi*y) + .7;
 % f2(xs,ys)
-f2 = xs.^2 + 2*ys.^2 - .3*cos(3*pi*xs) - .4*(4*pi*ys) + .7;
+f2 = xs.^2 + 2*ys.^2 - .3*cos(3*pi*xs) - .4*cos(4*pi*ys) + .7;
 %% figure with 1 variable
 % figure(1); 
 % sgtitle("TITLE")
