@@ -13,9 +13,9 @@ F1 = -sin(10*log(u+101));
 % f1(us)
 f1 = -sin(10*log(us+101));
 % F2(x,y)
-F2 = -.5*(sin(10*log(x+101)) + sin(10*log(y+101)));
+F2 = -(sin(10*log10(x+101)) + sin(10*log10(y+101)));
 % f2(xs,ys)
-f2 = -.5*(sin(10*log(xs+101)) + sin(10*log(ys+101)));
+f2 = -(sin(10*log10(xs+101)) + sin(10*log10(ys+101)));
 %% figure with 1 variable
 figure(1); 
 sgtitle("Vincentova funkce")
