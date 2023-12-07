@@ -6,4 +6,5 @@ functions = [F.Ackley, F.Alpine01, F.Alpine02, F.Bohachevsky, F.CosineMixture, F
              F.Schwefel22, F.Schwefel26, F.SineEnvelope, F.StretchedVSine, F.StyblinskiTang, F.Trigonometric02, F.Vincent]
 
 
-
+for f in functions:
+    print(f'{f.__name__} : {f([40,70])}')

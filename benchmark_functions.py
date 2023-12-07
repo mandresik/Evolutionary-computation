@@ -1,8 +1,8 @@
 import math as M
 
-fact_2 = 2
-fact_10 = 3628800
-fact_30 = 265252859812191058636308480000000
+# factorial for Mishra07 function is precalculated and changed only with change of dimension
+fact_arg = 2
+fact = 2
 
 def norm(x):
     return M.sqrt(sum(xi**2 for xi in x))
@@ -53,13 +53,12 @@ def Michalewicz_m1(x):
 def Michalewicz_m10(x):
     return Michalewicz(x, 10)
 
-# f is precalculated value of factorial, f = (len(x))!
-# Mishra07 is created only for dimensions 2, 10, 30
 def Mishra07(x): 
-    if(len(x) == 10): f = fact_10
-    elif(len(x) == 30): f = fact_30
-    else: f = fact_2
-    return (M.prod(xi for xi in x) - f)**2
+    global fact, fact_arg
+    if(fact_arg != len(x)):
+        fact_arg = len(x)
+        fact = M.factorial(fact_arg)
+    return (M.prod(xi for xi in x) - fact)**2
 
 def Mishra11(x):
     return (sum(abs(xi) for xi in x) / len(x) - M.prod(abs(xi) for xi in x)**(1 / len(x)))**2
@@ -71,7 +70,7 @@ def Rastrigin(x):
     return 2 * len(x) * sum(xi**2 - 10 * M.cos(2 * M.pi * xi) for xi in x)
 
 def Rosenbrock(x): 
-    return sum(100 * (x[i]**2 - x[i + 1]**2) + (1 - x[i])**2 for i in range(len(x) - 1))
+    return sum(100 * (x[i]**2 - x[i + 1])**2 + (1 - x[i])**2 for i in range(len(x) - 1))
 
 def Salomon(x):
     norm_x = norm(x)
@@ -99,6 +98,6 @@ def Trigonometric02(x):
     return 1 + sum(8 * M.sin(7 * wi)**2 + 6 * M.sin(14 * wi)**2 + wi for wi in w)
 
 def Vincent(x):
-    return -sum(M.sin(10 * M.log10(xi + 101)) for xi in x) / len(x)
+    return -sum(M.sin(10 * M.log10(xi + 101)) for xi in x)
 
 
