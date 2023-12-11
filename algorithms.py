@@ -185,7 +185,7 @@ def SOMA_all_to_one(fitness, dimension, population_size, mx_migration, lower_bou
                     if(fitness_new_individual < fitness_best_on_traj):
                         best_on_trajectory = new_individual
                         fitness_best_on_traj = fitness_new_individual
-                        # keeping track of best fitness of all
+                        # keeping track of the best fitness found
                         if(fitness_best_on_traj < fx_best): 
                             fx_best = fitness_best_on_traj
 
@@ -199,3 +199,46 @@ def SOMA_all_to_one(fitness, dimension, population_size, mx_migration, lower_bou
 
 
 
+def SOMA_all_to_all(fitness, dimension, population_size, mx_migration, lower_bound, upper_bound, step_size, path_length, PRT):
+    # initialization of population and it's fitness values
+    population = init_population(population_size, dimension, lower_bound, upper_bound)
+    fitness_population = [fitness(individual) for individual in population]
+    # fx_best keeps the best fitness found 
+    fx_best = fitness_population[0]
+
+    for _ in range(mx_migration): 
+        # saving new population for upcoming migration
+        new_population = [[0 for _ in range(dimension)] for _ in range(population_size)]
+        new_fitness_population = [0 for _ in range(population_size)]
+
+        # trajectories starting in population[s] and ending in population[e]
+        for s in range(population_size): 
+            # keeping track of the best individual starting in population[s]
+            best_from_s = population[s]
+            fitness_best_from_s = fitness_population[s]
+            # investigating all trajectories from population[s]
+            for e in range(population_size):
+                if(s != e):
+                    t = 0
+                    while(t <= path_length):
+                        prt_vector = [float(rnd.rand() < PRT) for _ in range(dimension)]
+                        new_individual = reflect([population[s][j] + (population[e][j] - population[s][j]) * t * prt_vector[j] for j in range(dimension)], lower_bound, upper_bound)
+                        fitness_new_individual = fitness(new_individual)
+                        # keeping track of best found from population[s]
+                        if(fitness_new_individual < fitness_best_from_s):
+                            best_from_s = new_individual
+                            fitness_best_from_s = fitness_new_individual
+                            # keeping track of the best fitness found
+                            if(fitness_best_from_s < fx_best): 
+                                fx_best = fitness_best_from_s
+
+                        t += step_size
+
+            # saving best individual found on trajectory from population[s]
+            new_population[s] = best_from_s
+            new_fitness_population[s] = fitness_best_from_s
+
+        population = new_population
+        fitness_population = new_fitness_population
+
+    return fx_best
