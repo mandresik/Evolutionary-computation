@@ -191,7 +191,7 @@ def SOMA_all_to_one(fitness, dimension, population_size, mx_migration, lower_bou
 
                     t += step_size
 
-                # saving best on trajoctory for new population
+                # saving best on trajectory for new population
                 population[i] = best_on_trajectory
                 fitness_population[i] = fitness_best_on_traj
 
