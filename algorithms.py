@@ -23,6 +23,7 @@ def mutation_rand_1(curr_index, population, F, lower_bound, upper_bound):
     return mutant
 
 
+# mutation of type best/1
 def mutation_best_1(best_index, population, F, lower_bound, upper_bound):
     # ind contains 2 random indices distinct from each other and best_index
     ind = rnd.choice([i for i in range(len(population)) if i != best_index], size = 2, replace = False)
@@ -55,13 +56,14 @@ def init_velocity(population_size, dimension, v_min, v_max):
     return [[rnd.uniform(v_min, v_max) for _ in range(dimension)] for _ in range(population_size)]
 
 
+# calculates velocity in PSO algorithm
 def calc_velocity(velocity, particle, p_best, g_best, w, c1, c2):
     return [w * velocity[j] + c1 * rnd.rand() * (p_best[j] - particle[j]) + c2 * rnd.rand() * (g_best[j] - particle[j]) for j in range(len(particle))]
 
 
 
 # differential evolution with rand/1 mutation and binomial crossover
-def DE_r1b(fitness, dimension, population_size, mx_generation, lower_bound, upper_bound, F, CR):
+def DE_rand_1_bin(fitness, dimension, population_size, mx_generation, lower_bound, upper_bound, F, CR):
     # initialization of population
     population = init_population(population_size, dimension, lower_bound, upper_bound)
 
@@ -89,7 +91,7 @@ def DE_r1b(fitness, dimension, population_size, mx_generation, lower_bound, uppe
 
 
 # differential evolution with best/1 mutation and binomial crossover
-def DE_b1b(fitness, dimension, population_size, mx_generation, lower_bound, upper_bound, F, CR):
+def DE_best_1_bin(fitness, dimension, population_size, mx_generation, lower_bound, upper_bound, F, CR):
     # initialization of population
     population = init_population(population_size, dimension, lower_bound, upper_bound)
 
@@ -153,7 +155,47 @@ def PSO(fitness, dimension, population_size, mx_generation, lower_bound, upper_b
 
 
 
-# SOMA
-def SOMA():
-    return 0
+# self organizing migrating algorithm with all-to-one migration
+def SOMA_all_to_one(fitness, dimension, population_size, mx_migration, lower_bound, upper_bound, step_size, path_length, PRT):
+    # initialization of population and it's fitness values
+    population = init_population(population_size, dimension, lower_bound, upper_bound)
+    fitness_population = [fitness(individual) for individual in population]
+    # fx_best keeps the best fitness found 
+    fx_best = fitness_population[0]
+
+    for _ in range(mx_migration):
+        # individual with smallest fitness value is chosen as leader
+        leader = min(population, key = lambda x : fitness(x))
+        leader_i = population.index(leader)
+        fx_best = fitness(leader)
+
+        for i in range(population_size):
+            # each individual (except for leader) moves towards leader
+            if(i != leader_i):
+                t = 0
+                # best_on_trajectory is individual with best fitness value on trajectory that will be saved for new population
+                best_on_trajectory = population[i]
+                fitness_best_on_traj = fitness_population[i]
+                while(t <= path_length):
+                    # calculation of individual on the trajectory
+                    prt_vector = [float(rnd.rand() < PRT) for _ in range(dimension)]
+                    new_individual = reflect([population[i][j] + (leader[j] - population[i][j]) * t * prt_vector[j] for j in range(dimension)], lower_bound, upper_bound)
+                    fitness_new_individual = fitness(new_individual)
+                    # keeping track of best found on the trajectory
+                    if(fitness_new_individual < fitness_best_on_traj):
+                        best_on_trajectory = new_individual
+                        fitness_best_on_traj = fitness_new_individual
+                        # keeping track of best fitness of all
+                        if(fitness_best_on_traj < fx_best): 
+                            fx_best = fitness_best_on_traj
+
+                    t += step_size
+
+                # saving best on trajoctory for new population
+                population[i] = best_on_trajectory
+                fitness_population[i] = fitness_best_on_traj
+
+    return fx_best
+
+
 
