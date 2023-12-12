@@ -1,16 +1,52 @@
 import math as M
 
+"""
+----------------------------------- benchmark_functions.py -----------------------------------
+
+In benchmark_functions.py, functions for testing/benchmarking different algorithms are implemented.
+Total count: 25 functions
+
+Implemented functions: 
+    Ackley
+    Alpine 01
+    Alpine 02
+    Bohachevsky
+    Cosine Mixture
+    Deflected Corrugated Spring
+    Dixon Price
+    Griewank
+    Inverted Cosine Wave
+    Levy
+    Michalewicz, with 2 different choices of steepness parameter m 
+        Michalewicz_m1
+        Michalewicz_m10
+    Mishra 07
+    Mishra 11
+    Pathological
+    Rastrigin
+    Rosenbrock
+    Salomon
+    Schwefel 22
+    Schwefel 26
+    Sine Envelope
+    Stretched V Sine
+    Styblinsky Tang
+    Trigonometric 02
+    Vincent
+    
+"""
+
+
 # factorial for Mishra07 function is precalculated and changed only with change of dimension
 fact_arg = 2
 fact = 2
 
+# norm of vector x
 def norm(x):
     return M.sqrt(sum(xi**2 for xi in x))
 
 
-###############################################################################
-#                            BENCHMARK FUNCTIONS        
-###############################################################################
+# --- Benchmark functions --- 
 
 def Ackley(x):
     return -20 * M.exp(-0.2 * M.sqrt(sum(xi**2 for xi in x) / len(x))) - M.exp(sum(M.cos(2 * M.pi * xi) for xi in x) / len(x)) + 20 + M.exp(1)
