@@ -3,6 +3,15 @@ import benchmark_functions as F
 import pandas 
 from scipy.stats import rankdata
 
+"""
+-------------------------------------- main.py --------------------------------------
+
+In main.py, for all benchmark functions, global minimas using algorithms from algorithms_fes.py are calculated.
+In parameters section, parameters like dimension, population_size, FES, etc ... may be modified.
+These results are then saved in .csv files for comparison and ranking algorithms.
+
+"""
+
 # --------------------------------
 # formatting small and large numbers for better overview
 def format_number(num):
