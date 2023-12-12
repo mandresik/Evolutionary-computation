@@ -14,7 +14,7 @@ Implemented algorithms:
     SOMA_all_to_one     self organizing migrating algorithm with all-to-one migration
     SOMA_all_to_all     self organizing migrating algorithm with all-to-all migration
 
-Time complexities (without considering dimension of individuals): 
+Time complexities (with no consideration of the individual's dimensions): 
     All algorithms has the same time complexity    O( FES ).
 
 """

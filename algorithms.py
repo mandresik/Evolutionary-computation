@@ -14,7 +14,7 @@ Implemented algorithms:
     SOMA_all_to_one     self organizing migrating algorithm with all-to-one migration
     SOMA_all_to_all     self organizing migrating algorithm with all-to-all migration
 
-Time complexities (without considering dimension of individuals): 
+Time complexities (with no consideration of the individual's dimensions): 
     DE_rand_1_bin       O( mx_generation * population_size )
     DE_best_1_bin       O( mx_generation * population_size )
     PSO                 O( mx_generation * population_size )
