@@ -1,6 +1,7 @@
 import algorithms_fes as A
 import benchmark_functions as F 
 import pandas 
+import time
 from scipy.stats import rankdata
 
 """
@@ -49,8 +50,8 @@ prt = 0.7
 # general
 lower_bound = -100
 upper_bound = 100
-dimension = 2
-population_size = 10
+dimension = 10
+population_size = 20
 FES = 2000 * dimension
 
 
@@ -63,6 +64,7 @@ repetitions = 30
 RESULTS = [[0 for _ in range(5)] for _ in range(25)]
 RANKS = [[0 for _ in range(5)] for _ in range(25)]
 
+start_time = time.time()
 for i, fun in enumerate(functions):
 
     # results of algorithms for each function, as an average in repetitions
@@ -76,16 +78,23 @@ for i, fun in enumerate(functions):
         result_i[4] += A.SOMA_all_to_all(fun, dimension, population_size, FES, lower_bound, upper_bound, step_size, path_length, prt)
 
     # average fx_best in repetitions
-    for j in range(5): 
-        result_i[j] /= repetitions 
-    result_i = [format_number(ri) for ri in result_i]
+    result_i = [result_i[j] / repetitions for j in range(5)]
+    
     # ranks of results 
-    ranks_i = rankdata(result_i)
+    ranks_i = rankdata(result_i, method = 'min')
     ranks_i = [int(ri) for ri in ranks_i]
 
+    # after ranking, format result_i for better overview
+    # note that numbers like 2.0 and 2.0000000001 would be both 2.0000 in results.csv (ranks would be correct)
+    # result_i = [format_number(ri) for ri in result_i]
+
     # saving each row 
-    RESULTS[i] = result_i
-    RANKS[i] = ranks_i
+    RESULTS[i] = result_i.copy()
+    RANKS[i] = ranks_i.copy()
+
+
+end_time = time.time()
+print(f"Elapsed time: {int((end_time - start_time) / 60)} minutes and {int((end_time - start_time) % 60)} seconds.")
 
 
 # --------------------------------

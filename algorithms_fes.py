@@ -1,4 +1,5 @@
 import numpy.random as rnd
+from copy import deepcopy
 
 """
 ---------------------------------- algorithms_fes.py ----------------------------------
@@ -93,6 +94,10 @@ def DE_rand_1_bin(fitness, dimension, population_size, FES, lower_bound, upper_b
     fes = 0
     while(True):
 
+        # new population and it's fitness values for next generation
+        new_population = deepcopy(population)
+        fitness_new_population = fitness_population.copy()
+
         for i in range(population_size):
             # mutation
             mutant = mutation_rand_1(i, population, F, lower_bound, upper_bound)
@@ -101,13 +106,17 @@ def DE_rand_1_bin(fitness, dimension, population_size, FES, lower_bound, upper_b
             fitness_cross = fitness(cross)
             # selection
             if(fitness_cross <= fitness_population[i]):
-                population[i] = cross
-                fitness_population[i] = fitness_cross
+                # overwrite if cross is better then current individual
+                new_population[i] = cross.copy()
+                fitness_new_population[i] = fitness_cross
                 if(fitness_cross <= fx_best):
                     fx_best = fitness_cross
 
             fes += 1
             if(fes == FES): return fx_best
+
+        population = deepcopy(new_population)
+        fitness_population = fitness_new_population.copy()  
 
 
 
@@ -124,6 +133,10 @@ def DE_best_1_bin(fitness, dimension, population_size, FES, lower_bound, upper_b
     fes = 0
     while(True):
 
+        # new population and it's fitness values for next generation
+        new_population = deepcopy(population)
+        fitness_new_population = fitness_population.copy()
+
         for i in range(population_size):
             # mutation
             mutant = mutation_best_1(i_best, population, F, lower_bound, upper_bound)
@@ -132,14 +145,18 @@ def DE_best_1_bin(fitness, dimension, population_size, FES, lower_bound, upper_b
             fitness_cross = fitness(cross)
             # selection
             if(fitness_cross <= fitness_population[i]):
-                population[i] = cross
-                fitness_population[i] = fitness_cross
+                # overwrite if cross is better then current individual
+                new_population[i] = cross.copy()
+                fitness_new_population[i] = fitness_cross
                 if(fitness_cross <= fx_best):
                     i_best = i
                     fx_best = fitness_cross
 
             fes += 1
             if(fes == FES): return fx_best
+
+        population = deepcopy(new_population)
+        fitness_population = fitness_new_population.copy()
 
 
 
@@ -159,6 +176,9 @@ def PSO(fitness, dimension, population_size, FES, lower_bound, upper_bound, w, c
     fes = 0
     while(True):
 
+        # new particles' positions for next generation
+        new_particles = deepcopy(particles)
+
         for i in range(population_size):
             # calculation of new velocity and new position
             new_velocity = calc_velocity(velocity[i], particles[i], particles_best[i], global_best, w, c1, c2)
@@ -166,17 +186,19 @@ def PSO(fitness, dimension, population_size, FES, lower_bound, upper_bound, w, c
             # compare fitness of new position with fitness of particle_best and possibly global_best
             fitness_new_pos = fitness(new_position)
             if(fitness_new_pos < fitness_p_best[i]):
-                particles_best[i] = new_position
+                particles_best[i] = new_position.copy()
                 fitness_p_best[i] = fitness_new_pos
                 if(fitness_new_pos < fitness_g_best):
                     global_best = new_position
                     fitness_g_best = fitness_new_pos
             # update new particle's velocity and position
             velocity[i] = new_velocity
-            particles[i] = new_position
+            new_particles[i] = new_position.copy()
 
             fes += 1
             if(fes == FES): return fitness_g_best
+
+        particles = deepcopy(new_particles)
 
 
 
@@ -195,12 +217,16 @@ def SOMA_all_to_one(fitness, dimension, population_size, FES, lower_bound, upper
         leader_i = population.index(leader)
         fx_best = fitness(leader)
 
+        # new population and it's fitness values for next generation
+        new_population = deepcopy(population)
+        fitness_new_population = fitness_population.copy()
+
         for i in range(population_size):
             # each individual (except for leader) moves towards leader
             if(i != leader_i):
                 t = 0
                 # best_on_trajectory is individual with best fitness value on trajectory that will be saved for new population
-                best_on_trajectory = population[i]
+                best_on_trajectory = population[i].copy()
                 fitness_best_on_traj = fitness_population[i]
                 while(t <= path_length):
                     # calculation of individual on the trajectory
@@ -209,7 +235,7 @@ def SOMA_all_to_one(fitness, dimension, population_size, FES, lower_bound, upper
                     fitness_new_individual = fitness(new_individual)
                     # keeping track of best found on the trajectory
                     if(fitness_new_individual < fitness_best_on_traj):
-                        best_on_trajectory = new_individual
+                        best_on_trajectory = new_individual.copy()
                         fitness_best_on_traj = fitness_new_individual
                         # keeping track of the best fitness found
                         if(fitness_best_on_traj < fx_best): 
@@ -220,8 +246,11 @@ def SOMA_all_to_one(fitness, dimension, population_size, FES, lower_bound, upper
                     if(fes == FES): return fx_best
 
                 # saving best on trajectory for new population
-                population[i] = best_on_trajectory
-                fitness_population[i] = fitness_best_on_traj
+                new_population[i] = best_on_trajectory.copy()
+                fitness_new_population[i] = fitness_best_on_traj
+
+        population = deepcopy(new_population)
+        fitness_population = fitness_new_population.copy()
 
 
 
@@ -236,13 +265,13 @@ def SOMA_all_to_all(fitness, dimension, population_size, FES, lower_bound, upper
     fes = 0
     while(True): 
         # saving new population for upcoming migration
-        new_population = [[0 for _ in range(dimension)] for _ in range(population_size)]
-        new_fitness_population = [0 for _ in range(population_size)]
+        new_population = deepcopy(population)
+        fitness_new_population = fitness_population.copy()
 
         # trajectories starting in population[s] and ending in population[e]
         for s in range(population_size): 
             # keeping track of the best individual starting in population[s]
-            best_from_s = population[s]
+            best_from_s = population[s].copy()
             fitness_best_from_s = fitness_population[s]
             # investigating all trajectories from population[s]
             for e in range(population_size):
@@ -254,7 +283,7 @@ def SOMA_all_to_all(fitness, dimension, population_size, FES, lower_bound, upper
                         fitness_new_individual = fitness(new_individual)
                         # keeping track of best found from population[s]
                         if(fitness_new_individual < fitness_best_from_s):
-                            best_from_s = new_individual
+                            best_from_s = new_individual.copy()
                             fitness_best_from_s = fitness_new_individual
                             # keeping track of the best fitness found
                             if(fitness_best_from_s < fx_best): 
@@ -265,9 +294,9 @@ def SOMA_all_to_all(fitness, dimension, population_size, FES, lower_bound, upper
                         if(fes == FES): return fx_best
 
             # saving best individual found on trajectory from population[s]
-            new_population[s] = best_from_s
-            new_fitness_population[s] = fitness_best_from_s
+            new_population[s] = best_from_s.copy()
+            fitness_new_population[s] = fitness_best_from_s
 
-        population = new_population
-        fitness_population = new_fitness_population
+        population = deepcopy(new_population)
+        fitness_population = fitness_new_population
 
