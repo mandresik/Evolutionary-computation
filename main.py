@@ -15,6 +15,7 @@ These results are then saved in .csv files for comparison and ranking algorithms
 
 # --------------------------------
 # formatting small and large numbers for better overview
+# not used 
 def format_number(num):
     if(num == 0):
         return float(0)
@@ -50,8 +51,8 @@ prt = 0.7
 # general
 lower_bound = -100
 upper_bound = 100
-dimension = 10
-population_size = 20
+dimension = 2
+population_size = 10
 FES = 2000 * dimension
 
 
@@ -91,6 +92,8 @@ for i, fun in enumerate(functions):
     # saving each row 
     RESULTS[i] = result_i.copy()
     RANKS[i] = ranks_i.copy()
+
+    print(f"{(i + 1) * 4}% done.")
 
 
 end_time = time.time()
