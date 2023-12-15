@@ -1,12 +1,52 @@
 import math as M
 
+"""
+----------------------------------- benchmark_functions.py -----------------------------------
 
+In benchmark_functions.py, functions for testing/benchmarking different algorithms are implemented.
+Total count: 25 functions
+
+Implemented functions: 
+    Ackley
+    Alpine 01
+    Alpine 02
+    Bohachevsky
+    Cosine Mixture
+    Deflected Corrugated Spring
+    Dixon Price
+    Griewank
+    Inverted Cosine Wave
+    Levy
+    Michalewicz, with 2 different choices of steepness parameter m 
+        Michalewicz_m1
+        Michalewicz_m10
+    Mishra 07
+    Mishra 11
+    Pathological
+    Rastrigin
+    Rosenbrock
+    Salomon
+    Schwefel 22
+    Schwefel 26
+    Sine Envelope
+    Stretched V Sine
+    Styblinsky Tang
+    Trigonometric 02
+    Vincent
+    
+"""
+
+
+# factorial for Mishra07 function is precalculated and changed only with change of dimension
+fact_arg = 2
+fact = 2
+
+# norm of vector x
 def norm(x):
     return M.sqrt(sum(xi**2 for xi in x))
 
-###############################################################################
-#                          25 BENCHMARK FUNCTIONS        
-###############################################################################
+
+# --- Benchmark functions --- 
 
 def Ackley(x):
     return -20 * M.exp(-0.2 * M.sqrt(sum(xi**2 for xi in x) / len(x))) - M.exp(sum(M.cos(2 * M.pi * xi) for xi in x) / len(x)) + 20 + M.exp(1)
@@ -49,9 +89,12 @@ def Michalewicz_m1(x):
 def Michalewicz_m10(x):
     return Michalewicz(x, 10)
 
-# f is precalculated value of factorial, f = (len(x))!
-def Mishra07(x, f): 
-    return (M.prod(xi for xi in x) - f)**2
+def Mishra07(x): 
+    global fact, fact_arg
+    if(fact_arg != len(x)):
+        fact_arg = len(x)
+        fact = M.factorial(fact_arg)
+    return (M.prod(xi for xi in x) - fact)**2
 
 def Mishra11(x):
     return (sum(abs(xi) for xi in x) / len(x) - M.prod(abs(xi) for xi in x)**(1 / len(x)))**2
@@ -63,7 +106,7 @@ def Rastrigin(x):
     return 2 * len(x) * sum(xi**2 - 10 * M.cos(2 * M.pi * xi) for xi in x)
 
 def Rosenbrock(x): 
-    return sum(100 * (x[i]**2 - x[i + 1]**2) + (1 - x[i])**2 for i in range(len(x) - 1))
+    return sum(100 * (x[i]**2 - x[i + 1])**2 + (1 - x[i])**2 for i in range(len(x) - 1))
 
 def Salomon(x):
     norm_x = norm(x)
@@ -91,6 +134,6 @@ def Trigonometric02(x):
     return 1 + sum(8 * M.sin(7 * wi)**2 + 6 * M.sin(14 * wi)**2 + wi for wi in w)
 
 def Vincent(x):
-    return -sum(M.sin(10 * M.log10(xi + 101)) for xi in x) / len(x)
+    return -sum(M.sin(10 * M.log10(xi + 101)) for xi in x)
 
 

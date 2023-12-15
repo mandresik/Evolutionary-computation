@@ -2,11 +2,11 @@ import numpy.random as rnd
 from copy import deepcopy
 
 """
------------------------------------ algorithms.py -----------------------------------
+---------------------------------- algorithms_fes.py ----------------------------------
 
-In algorithms.py, stopping condition for each algorithm is maximum number of generations/migrations.
-With each algorithm's behaviour, this results in different time complexities. 
-Same time complexity for each algorithm is ensured in algorithms_fes.py.
+In algorithms_fes.py, for all algorithms, stopping condition is count of function evaluations FES. 
+With each algorithms's behaviour, this may result in an uncomplete last migration (not all individuals migrated).
+Completing last migration in each algorithm is ensured in algorithms.py.
 
 Implemented algorithms: 
     DE_rand_1_bin       differential evolution with rand/1 mutation and binomial crossover
@@ -16,11 +16,7 @@ Implemented algorithms:
     SOMA_all_to_all     self organizing migrating algorithm with all-to-all migration
 
 Time complexities (with no consideration of the individual's dimensions): 
-    DE_rand_1_bin       O( mx_generation * population_size )
-    DE_best_1_bin       O( mx_generation * population_size )
-    PSO                 O( mx_generation * population_size )
-    SOMA_all_to_one     O( mx_migration * path_length * (population_size - 1) / step_size )
-    SOMA_all_to_all     O( mx_migration * path_length * population_size * (population_size - 1) / step_size )
+    All algorithms has the same time complexity    O( FES ).
 
 """
 
@@ -87,7 +83,7 @@ def calc_velocity(velocity, particle, p_best, g_best, w, c1, c2):
 
 
 # differential evolution with rand/1 mutation and binomial crossover
-def DE_rand_1_bin(fitness, dimension, population_size, mx_generation, lower_bound, upper_bound, F, CR):
+def DE_rand_1_bin(fitness, dimension, population_size, FES, lower_bound, upper_bound, F, CR):
     # initialization of population and it's ftiness values
     population = init_population(population_size, dimension, lower_bound, upper_bound)
     fitness_population = [fitness(individual) for individual in population]
@@ -95,7 +91,8 @@ def DE_rand_1_bin(fitness, dimension, population_size, mx_generation, lower_boun
     # keeping track of best fitness value found
     fx_best = fitness_population[0]
 
-    for _ in range(mx_generation):
+    fes = 0
+    while(True):
 
         # new population and it's fitness values for next generation
         new_population = deepcopy(population)
@@ -112,18 +109,19 @@ def DE_rand_1_bin(fitness, dimension, population_size, mx_generation, lower_boun
                 # overwrite if cross is better then current individual
                 new_population[i] = cross.copy()
                 fitness_new_population[i] = fitness_cross
-                if(fitness_cross < fx_best):
+                if(fitness_cross <= fx_best):
                     fx_best = fitness_cross
 
-        population = deepcopy(new_population)
-        fitness_population = fitness_new_population.copy()
+            fes += 1
+            if(fes == FES): return fx_best
 
-    return fx_best
+        population = deepcopy(new_population)
+        fitness_population = fitness_new_population.copy()  
 
 
 
 # differential evolution with best/1 mutation and binomial crossover
-def DE_best_1_bin(fitness, dimension, population_size, mx_generation, lower_bound, upper_bound, F, CR):
+def DE_best_1_bin(fitness, dimension, population_size, FES, lower_bound, upper_bound, F, CR):
     # initialization of population and it's fitness values
     population = init_population(population_size, dimension, lower_bound, upper_bound)
     fitness_population = [fitness(individual) for individual in population]
@@ -132,7 +130,8 @@ def DE_best_1_bin(fitness, dimension, population_size, mx_generation, lower_boun
     i_best = 0
     fx_best = fitness_population[0]
 
-    for _ in range(mx_generation):
+    fes = 0
+    while(True):
 
         # new population and it's fitness values for next generation
         new_population = deepcopy(population)
@@ -149,23 +148,24 @@ def DE_best_1_bin(fitness, dimension, population_size, mx_generation, lower_boun
                 # overwrite if cross is better then current individual
                 new_population[i] = cross.copy()
                 fitness_new_population[i] = fitness_cross
-                if(fitness_cross < fx_best):
+                if(fitness_cross <= fx_best):
                     i_best = i
                     fx_best = fitness_cross
+
+            fes += 1
+            if(fes == FES): return fx_best
 
         population = deepcopy(new_population)
         fitness_population = fitness_new_population.copy()
 
-    return fx_best
-
 
 
 # partical swarm optimization
-def PSO(fitness, dimension, population_size, mx_generation, lower_bound, upper_bound, w, c1, c2):
+def PSO(fitness, dimension, population_size, FES, lower_bound, upper_bound, w, c1, c2):
     # initialization of particles
     particles = init_population(population_size, dimension, lower_bound, upper_bound)
     # every particle's found best position and it's fitness
-    particles_best = deepcopy(particles)
+    particles_best = particles
     fitness_p_best = [fitness(particle) for particle in particles_best]
     # global best, particle with the smallest fitness value
     global_best = min(particles_best, key = lambda x : fitness(x))
@@ -173,7 +173,8 @@ def PSO(fitness, dimension, population_size, mx_generation, lower_bound, upper_b
     # velocities of particles, initially set to zero
     velocity = init_velocity(population_size, dimension, 0, 0)
 
-    for _ in range(mx_generation):
+    fes = 0
+    while(True):
 
         # new particles' positions for next generation
         new_particles = deepcopy(particles)
@@ -194,21 +195,23 @@ def PSO(fitness, dimension, population_size, mx_generation, lower_bound, upper_b
             velocity[i] = new_velocity
             new_particles[i] = new_position.copy()
 
-        particles = deepcopy(new_particles)
+            fes += 1
+            if(fes == FES): return fitness_g_best
 
-    return fitness_g_best
+        particles = deepcopy(new_particles)
 
 
 
 # self organizing migrating algorithm with all-to-one migration
-def SOMA_all_to_one(fitness, dimension, population_size, mx_migration, lower_bound, upper_bound, step_size, path_length, PRT):
+def SOMA_all_to_one(fitness, dimension, population_size, FES, lower_bound, upper_bound, step_size, path_length, PRT):
     # initialization of population and it's fitness values
     population = init_population(population_size, dimension, lower_bound, upper_bound)
     fitness_population = [fitness(individual) for individual in population]
     # fx_best keeps the best fitness found 
     fx_best = fitness_population[0]
 
-    for _ in range(mx_migration):
+    fes = 0
+    while(True):
         # individual with smallest fitness value is chosen as leader
         leader = min(population, key = lambda x : fitness(x))
         leader_i = population.index(leader)
@@ -239,6 +242,8 @@ def SOMA_all_to_one(fitness, dimension, population_size, mx_migration, lower_bou
                             fx_best = fitness_best_on_traj
 
                     t += step_size
+                    fes += 1
+                    if(fes == FES): return fx_best
 
                 # saving best on trajectory for new population
                 new_population[i] = best_on_trajectory.copy()
@@ -247,19 +252,18 @@ def SOMA_all_to_one(fitness, dimension, population_size, mx_migration, lower_bou
         population = deepcopy(new_population)
         fitness_population = fitness_new_population.copy()
 
-    return fx_best
-
 
 
 # self organizing migrating algorithm with all-to-all migration
-def SOMA_all_to_all(fitness, dimension, population_size, mx_migration, lower_bound, upper_bound, step_size, path_length, PRT):
+def SOMA_all_to_all(fitness, dimension, population_size, FES, lower_bound, upper_bound, step_size, path_length, PRT):
     # initialization of population and it's fitness values
     population = init_population(population_size, dimension, lower_bound, upper_bound)
     fitness_population = [fitness(individual) for individual in population]
     # fx_best keeps the best fitness found 
     fx_best = fitness_population[0]
 
-    for _ in range(mx_migration): 
+    fes = 0
+    while(True): 
         # saving new population for upcoming migration
         new_population = deepcopy(population)
         fitness_new_population = fitness_population.copy()
@@ -286,12 +290,13 @@ def SOMA_all_to_all(fitness, dimension, population_size, mx_migration, lower_bou
                                 fx_best = fitness_best_from_s
 
                         t += step_size
+                        fes += 1
+                        if(fes == FES): return fx_best
 
             # saving best individual found on trajectory from population[s]
             new_population[s] = best_from_s.copy()
             fitness_new_population[s] = fitness_best_from_s
 
         population = deepcopy(new_population)
-        fitness_population = fitness_new_population.copy()
-        
-    return fx_best
+        fitness_population = fitness_new_population
+
